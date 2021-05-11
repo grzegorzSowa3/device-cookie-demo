@@ -2,6 +2,7 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 import lombok.AllArgsConstructor;
 
+import javax.persistence.Convert;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 class GenericClient {
 
+    @Convert(converter = ListOfLongsConverter.class)
     private List<Long> failedLoginAttempts;
     private LocalDateTime lockedUntil;
 
