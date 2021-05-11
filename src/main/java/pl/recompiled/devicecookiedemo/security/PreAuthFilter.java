@@ -38,9 +38,7 @@ class PreAuthFilter extends GenericFilterBean {
             // if trusted client identified by cookie nonce is not locked
             if (!deviceCookieService.isTrustedClientLocked(nonce)) {
                 // proceed with authentication as trusted client
-                request.setAttribute(AUTH_ALLOWED_ATTR_NAME, true);
-                request.setAttribute(CLIENT_TRUSTED_ATTR_NAME, true);
-                filterChain.doFilter(request, response);
+                proceedAsTrustedClient(request, response, filterChain, nonce);
                 return;
             }
         }
@@ -49,9 +47,7 @@ class PreAuthFilter extends GenericFilterBean {
         // if untrusted clients are not locked from that account
         if (!deviceCookieService.areUntrustedClientsLocked(username)) {
             // proceed with authentication as untrusted client
-            request.setAttribute(AUTH_ALLOWED_ATTR_NAME, true);
-            request.setAttribute(CLIENT_TRUSTED_ATTR_NAME, false);
-            filterChain.doFilter(request, response);
+            proceedAsUntrustedClient(request, response, filterChain);
             return;
         }
 
@@ -60,6 +56,20 @@ class PreAuthFilter extends GenericFilterBean {
         throw new AuthenticationAttemptsLockedException(
                 String.format("Authentication attempts for login: %s are locked", username));
 
+    }
+
+    private void proceedAsTrustedClient(ServletRequest request, ServletResponse response, FilterChain filterChain,
+                                        String nonce) throws IOException, ServletException {
+        request.setAttribute(AUTH_ALLOWED_ATTR_NAME, true);
+        request.setAttribute(CLIENT_TRUSTED_ATTR_NAME, true);
+        request.setAttribute(NONCE_ATTR_NAME, nonce);
+        filterChain.doFilter(request, response);
+    }
+
+    private void proceedAsUntrustedClient(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        request.setAttribute(AUTH_ALLOWED_ATTR_NAME, true);
+        request.setAttribute(CLIENT_TRUSTED_ATTR_NAME, false);
+        filterChain.doFilter(request, response);
     }
 
 }
