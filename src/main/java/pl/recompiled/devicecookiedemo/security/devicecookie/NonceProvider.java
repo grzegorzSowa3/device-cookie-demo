@@ -1,6 +1,6 @@
 package pl.recompiled.devicecookiedemo.security.devicecookie;
 
-interface NonceGenerator {
+interface NonceProvider {
 
     String generate();
 

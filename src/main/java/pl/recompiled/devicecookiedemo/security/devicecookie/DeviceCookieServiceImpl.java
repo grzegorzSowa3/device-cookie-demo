@@ -16,12 +16,12 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     private final DeviceCookieProperties properties;
     private final TrustedClientRepository trustedClientRepository;
     private final UntrustedClientRepository untrustedClientRepository;
-    private final DeviceCookieSerializer deviceCookieSerializer;
-    private final NonceGenerator nonceGenerator;
+    private final DeviceCookieProvider deviceCookieProvider;
+    private final NonceProvider nonceProvider;
 
     @Override
     public void validateTrustedClientLogin(String login, String deviceCookie) {
-        DeviceCookie cookie = deviceCookieSerializer.deserializeCookie(deviceCookie);
+        DeviceCookie cookie = deviceCookieProvider.deserializeCookie(deviceCookie);
         if (!cookie.getLogin().equals(login)) {
             throw new CookieLoginMismatchException(
                     String.format("Attempted login: %s different from login in device cookie: %s", login, cookie.getLogin()));
@@ -44,9 +44,14 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
 
     @Override
     public String generateCookieFor(String login) {
-        String nonce = nonceGenerator.generate();
+        String nonce = nonceProvider.generate();
         LocalDateTime validUntil = LocalDateTime.now().plus(properties.getCookieValidityDuration());
-        return deviceCookieSerializer.serializeCookie(new DeviceCookie(login, nonce, validUntil));
+        return deviceCookieProvider.serializeCookie(new DeviceCookie(login, nonce, validUntil));
+    }
+
+    @Override
+    public String extractNonce(String deviceCookie) {
+        return deviceCookieProvider.deserializeCookie(deviceCookie).getNonce();
     }
 
     @Override

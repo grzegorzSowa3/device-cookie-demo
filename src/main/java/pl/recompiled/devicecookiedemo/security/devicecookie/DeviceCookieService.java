@@ -8,6 +8,8 @@ public interface DeviceCookieService {
 
     String generateCookieFor(String login);
 
+    String extractNonce(String deviceCookie);
+
     void reportTrustedClientLoginFailure(String nonce);
 
     void reportUntrustedClientLoginFailure(String login);
