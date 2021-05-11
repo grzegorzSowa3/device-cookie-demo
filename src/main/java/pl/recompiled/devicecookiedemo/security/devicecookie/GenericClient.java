@@ -1,6 +1,5 @@
 package pl.recompiled.devicecookiedemo.security.devicecookie;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;

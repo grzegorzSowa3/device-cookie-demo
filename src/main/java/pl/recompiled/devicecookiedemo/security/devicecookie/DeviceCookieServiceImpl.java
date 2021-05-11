@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 class DeviceCookieServiceImpl implements DeviceCookieService {
 
     private final DeviceCookieProperties properties;
+    private final TrustedClientRepository trustedClientRepository;
+    private final UntrustedClientRepository untrustedClientRepository;
     private final DeviceCookieProvider deviceCookieProvider;
     private final NonceProvider nonceProvider;
 
@@ -27,11 +29,18 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
 
     @Override
     public void reportTrustedClientLoginFailure(String nonce) {
-        throw new UnsupportedOperationException();
+        TrustedClient trustedClient = trustedClientRepository.findById(nonce)
+                .orElse(TrustedClient.newInstance(nonce));
+        trustedClient.registerFailedLoginAttempt(properties);
+        trustedClientRepository.save(trustedClient);
     }
 
     @Override
     public void reportUntrustedClientLoginFailure(String login) {
-        throw new UnsupportedOperationException();
+        UntrustedClient untrustedClient = untrustedClientRepository.findById(login)
+                .orElse(UntrustedClient.newInstance(login));
+        untrustedClient.registerFailedLoginAttempt(properties);
+        untrustedClientRepository.save(untrustedClient);
     }
+
 }
