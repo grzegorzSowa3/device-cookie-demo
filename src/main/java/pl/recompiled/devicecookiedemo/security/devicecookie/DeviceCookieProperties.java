@@ -16,24 +16,15 @@ import java.util.Objects;
 class DeviceCookieProperties {
 
     @Setter
-    private String cookieValidityDuration;
-    @Setter
     private String timeWindow;
     @Setter
     private String penaltyDuration;
     @Setter
     @Getter
     private Integer maxFailures;
-    private TemporalAmount cookieValidityDurationParsed;
+
     private TemporalAmount timeWindowParsed;
     private TemporalAmount penaltyDurationParsed;
-
-    public TemporalAmount getCookieValidityDuration() {
-        if (Objects.isNull(cookieValidityDurationParsed)) {
-            cookieValidityDurationParsed = parseTemporalAmount(cookieValidityDuration);
-        }
-        return cookieValidityDurationParsed;
-    }
 
     TemporalAmount getTimeWindow() {
         if (Objects.isNull(timeWindowParsed)) {

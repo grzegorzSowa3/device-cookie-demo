@@ -9,4 +9,8 @@ public class CookieInvalidException extends DeviceCookieException {
         super(message);
     }
 
+    public CookieInvalidException(Throwable cause) {
+        super(cause);
+    }
+
 }

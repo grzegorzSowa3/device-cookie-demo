@@ -1,6 +1,8 @@
 
 device-cookie:
-  time-to-live: P2M
   time-window: PT30M
   max-failures: 5
   penalty-duration: PT1H
+  jwt:
+    issuer: http://test.pl
+    secret: j+x1Wvn/Dz/AZOqFj/nBsSOUKutXQvhag55MpLESVtI=

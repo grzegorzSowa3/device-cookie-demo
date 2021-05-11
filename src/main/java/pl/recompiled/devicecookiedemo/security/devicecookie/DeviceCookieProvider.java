@@ -2,8 +2,8 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 interface DeviceCookieProvider {
 
-    String serializeCookie(DeviceCookie deviceCookie);
+    String encodeCookie(DeviceCookie deviceCookie);
 
-    DeviceCookie deserializeCookie(String deviceCookie);
+    DeviceCookie decodeCookie(String deviceCookie);
 
 }

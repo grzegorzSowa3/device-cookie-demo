@@ -6,7 +6,6 @@ import pl.recompiled.devicecookiedemo.security.devicecookie.error.CookieLoginMis
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.TrustedClientLockedException;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.UntrustedClientLockedException;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -21,7 +20,7 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
 
     @Override
     public void validateTrustedClientLogin(String login, String deviceCookie) {
-        DeviceCookie cookie = deviceCookieProvider.deserializeCookie(deviceCookie);
+        DeviceCookie cookie = deviceCookieProvider.decodeCookie(deviceCookie);
         if (!cookie.getLogin().equals(login)) {
             throw new CookieLoginMismatchException(
                     String.format("Attempted login: %s different from login in device cookie: %s", login, cookie.getLogin()));
@@ -45,13 +44,12 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     @Override
     public String generateCookieFor(String login) {
         String nonce = nonceProvider.generate();
-        LocalDateTime validUntil = LocalDateTime.now().plus(properties.getCookieValidityDuration());
-        return deviceCookieProvider.serializeCookie(new DeviceCookie(login, nonce, validUntil));
+        return deviceCookieProvider.encodeCookie(new DeviceCookie(login, nonce));
     }
 
     @Override
     public String extractNonce(String deviceCookie) {
-        return deviceCookieProvider.deserializeCookie(deviceCookie).getNonce();
+        return deviceCookieProvider.decodeCookie(deviceCookie).getNonce();
     }
 
     @Override
