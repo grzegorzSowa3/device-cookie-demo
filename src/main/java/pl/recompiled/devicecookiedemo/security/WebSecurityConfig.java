@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .formLogin()
                 .loginPage("/login")
-                .failureHandler(new CustomAuthenticationFailureHandler())
+                .failureHandler(new CustomAuthenticationFailureHandler(deviceCookieService))
                 .successHandler(new CustomAuthenticationSuccessHandler(deviceCookieService))
                 .and()
 
