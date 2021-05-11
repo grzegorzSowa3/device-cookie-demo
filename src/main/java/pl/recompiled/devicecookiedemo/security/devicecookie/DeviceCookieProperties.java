@@ -22,6 +22,9 @@ class DeviceCookieProperties {
     @Setter
     @Getter
     private Integer maxFailures;
+    @Setter
+    @Getter
+    private Integer nonceLength;
 
     private TemporalAmount timeWindowParsed;
     private TemporalAmount penaltyDurationParsed;

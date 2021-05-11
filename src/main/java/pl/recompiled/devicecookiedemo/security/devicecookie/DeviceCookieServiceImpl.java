@@ -43,7 +43,7 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
 
     @Override
     public String generateCookieFor(String login) {
-        String nonce = nonceProvider.generate();
+        String nonce = nonceProvider.generate(properties.getNonceLength());
         return deviceCookieProvider.encodeCookie(new DeviceCookie(login, nonce));
     }
 

@@ -3,6 +3,7 @@ device-cookie:
   time-window: PT30M
   max-failures: 5
   penalty-duration: PT1H
+  nonce-length: 32
   jwt:
     issuer: http://test.pl
     secret: j+x1Wvn/Dz/AZOqFj/nBsSOUKutXQvhag55MpLESVtI=
