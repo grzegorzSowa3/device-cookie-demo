@@ -2,13 +2,15 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 public interface DeviceCookieService {
 
-    void validateTrustedClientLogin(String login, String deviceCookie);
+    boolean isDeviceCookieValidFor(String login, String deviceCookie);
 
-    void validateUntrustedClientLogin(String login);
-
-    String generateCookieFor(String login);
+    String generateDeviceCookieFor(String login);
 
     String extractNonce(String deviceCookie);
+
+    boolean isTrustedClientLocked(String nonce);
+
+    boolean areUntrustedClientsLocked(String login);
 
     void reportTrustedClientLoginFailure(String nonce);
 

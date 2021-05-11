@@ -2,11 +2,8 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.recompiled.devicecookiedemo.security.devicecookie.cookie.DeviceCookie;
 import pl.recompiled.devicecookiedemo.security.devicecookie.cookie.CookieProvider;
-import pl.recompiled.devicecookiedemo.security.devicecookie.error.CookieLoginMismatchException;
-import pl.recompiled.devicecookiedemo.security.devicecookie.error.TrustedClientLockedException;
-import pl.recompiled.devicecookiedemo.security.devicecookie.error.UntrustedClientLockedException;
+import pl.recompiled.devicecookiedemo.security.devicecookie.cookie.DeviceCookie;
 import pl.recompiled.devicecookiedemo.security.devicecookie.nonce.NonceProvider;
 
 import java.util.Optional;
@@ -22,30 +19,13 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     private final NonceProvider nonceProvider;
 
     @Override
-    public void validateTrustedClientLogin(String login, String deviceCookie) {
+    public boolean isDeviceCookieValidFor(String login, String deviceCookie) {
         DeviceCookie cookie = cookieProvider.decodeCookie(deviceCookie);
-        if (!cookie.getLogin().equals(login)) {
-            throw new CookieLoginMismatchException(
-                    String.format("Attempted login: %s different from login in device cookie: %s", login, cookie.getLogin()));
-        }
-        Optional<TrustedClient> trustedClient = trustedClientRepository.findById(cookie.getNonce());
-        if (trustedClient.isPresent() && trustedClient.get().isLocked()) {
-            throw new TrustedClientLockedException(
-                    String.format("Trusted client with nonce: %s is locked", cookie.getNonce()));
-        }
+        return cookie.getLogin().equals(login);
     }
 
     @Override
-    public void validateUntrustedClientLogin(String login) {
-        Optional<UntrustedClient> untrustedClient = untrustedClientRepository.findById(login);
-        if (untrustedClient.isPresent() && untrustedClient.get().isLocked()) {
-            throw new UntrustedClientLockedException(
-                    String.format("Untrusted clients for login: %s are locked", login));
-        }
-    }
-
-    @Override
-    public String generateCookieFor(String login) {
+    public String generateDeviceCookieFor(String login) {
         String nonce = nonceProvider.generate(properties.getNonceLength());
         return cookieProvider.encodeCookie(new DeviceCookie(login, nonce));
     }
@@ -53,6 +33,18 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     @Override
     public String extractNonce(String deviceCookie) {
         return cookieProvider.decodeCookie(deviceCookie).getNonce();
+    }
+
+    @Override
+    public boolean isTrustedClientLocked(String nonce) {
+        Optional<TrustedClient> trustedClient = trustedClientRepository.findById(nonce);
+        return trustedClient.isPresent() && trustedClient.get().isLocked();
+    }
+
+    @Override
+    public boolean areUntrustedClientsLocked(String login) {
+        Optional<UntrustedClient> untrustedClient = untrustedClientRepository.findById(login);
+        return untrustedClient.isPresent() && untrustedClient.get().isLocked();
     }
 
     @Override

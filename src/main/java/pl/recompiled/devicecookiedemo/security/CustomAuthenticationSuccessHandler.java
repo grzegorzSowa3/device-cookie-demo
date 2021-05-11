@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final DeviceCookieService deviceCookieService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        response.addCookie(new Cookie("device", deviceCookieService.generateCookieFor(authentication.getName())));
+        response.addCookie(new Cookie("device", deviceCookieService.generateDeviceCookieFor(authentication.getName())));
         response.setStatus(OK.value());
     }
 

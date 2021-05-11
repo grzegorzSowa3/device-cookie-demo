@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) {
