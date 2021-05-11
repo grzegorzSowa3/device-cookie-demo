@@ -1,6 +1,6 @@
-package pl.recompiled.devicecookiedemo.security.devicecookie;
+package pl.recompiled.devicecookiedemo.security.devicecookie.cookie;
 
-interface DeviceCookieProvider {
+public interface CookieProvider {
 
     String encodeCookie(DeviceCookie deviceCookie);
 

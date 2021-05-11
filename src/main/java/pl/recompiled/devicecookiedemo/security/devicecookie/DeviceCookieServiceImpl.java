@@ -2,9 +2,12 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.recompiled.devicecookiedemo.security.devicecookie.cookie.DeviceCookie;
+import pl.recompiled.devicecookiedemo.security.devicecookie.cookie.CookieProvider;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.CookieLoginMismatchException;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.TrustedClientLockedException;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.UntrustedClientLockedException;
+import pl.recompiled.devicecookiedemo.security.devicecookie.nonce.NonceProvider;
 
 import java.util.Optional;
 
@@ -15,12 +18,12 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     private final DeviceCookieProperties properties;
     private final TrustedClientRepository trustedClientRepository;
     private final UntrustedClientRepository untrustedClientRepository;
-    private final DeviceCookieProvider deviceCookieProvider;
+    private final CookieProvider cookieProvider;
     private final NonceProvider nonceProvider;
 
     @Override
     public void validateTrustedClientLogin(String login, String deviceCookie) {
-        DeviceCookie cookie = deviceCookieProvider.decodeCookie(deviceCookie);
+        DeviceCookie cookie = cookieProvider.decodeCookie(deviceCookie);
         if (!cookie.getLogin().equals(login)) {
             throw new CookieLoginMismatchException(
                     String.format("Attempted login: %s different from login in device cookie: %s", login, cookie.getLogin()));
@@ -44,12 +47,12 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
     @Override
     public String generateCookieFor(String login) {
         String nonce = nonceProvider.generate(properties.getNonceLength());
-        return deviceCookieProvider.encodeCookie(new DeviceCookie(login, nonce));
+        return cookieProvider.encodeCookie(new DeviceCookie(login, nonce));
     }
 
     @Override
     public String extractNonce(String deviceCookie) {
-        return deviceCookieProvider.decodeCookie(deviceCookie).getNonce();
+        return cookieProvider.decodeCookie(deviceCookie).getNonce();
     }
 
     @Override

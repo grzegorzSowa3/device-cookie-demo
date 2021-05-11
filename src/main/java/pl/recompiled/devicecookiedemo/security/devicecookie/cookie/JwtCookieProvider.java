@@ -1,4 +1,4 @@
-package pl.recompiled.devicecookiedemo.security.devicecookie;
+package pl.recompiled.devicecookiedemo.security.devicecookie.cookie;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -16,7 +16,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Component
-class JwtDeviceCookieProvider implements DeviceCookieProvider {
+class JwtCookieProvider implements CookieProvider {
 
     private final JwtDeviceCookieProperties properties;
     private final JWSSigner signer;
@@ -24,7 +24,7 @@ class JwtDeviceCookieProvider implements DeviceCookieProvider {
 
     private final JWSHeader header;
 
-    JwtDeviceCookieProvider(JwtDeviceCookieProperties properties) throws JOSEException {
+    JwtCookieProvider(JwtDeviceCookieProperties properties) throws JOSEException {
         this.properties = properties;
         this.signer = new MACSigner(properties.getSecret());
         this.verifier = new MACVerifier(properties.getSecret());

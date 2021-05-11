@@ -1,4 +1,4 @@
-package pl.recompiled.devicecookiedemo.security.devicecookie;
+package pl.recompiled.devicecookiedemo.security.devicecookie.nonce;
 
 import org.springframework.stereotype.Component;
 

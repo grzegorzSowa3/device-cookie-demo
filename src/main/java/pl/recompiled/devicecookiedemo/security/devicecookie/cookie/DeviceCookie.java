@@ -1,11 +1,11 @@
-package pl.recompiled.devicecookiedemo.security.devicecookie;
+package pl.recompiled.devicecookiedemo.security.devicecookie.cookie;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-class DeviceCookie {
+public class DeviceCookie {
 
     private String login;
     private String nonce;

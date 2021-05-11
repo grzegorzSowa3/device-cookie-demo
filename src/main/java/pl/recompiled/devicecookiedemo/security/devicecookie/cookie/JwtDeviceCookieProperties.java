@@ -1,4 +1,4 @@
-package pl.recompiled.devicecookiedemo.security.devicecookie;
+package pl.recompiled.devicecookiedemo.security.devicecookie.cookie;
 
 
 import lombok.Data;
