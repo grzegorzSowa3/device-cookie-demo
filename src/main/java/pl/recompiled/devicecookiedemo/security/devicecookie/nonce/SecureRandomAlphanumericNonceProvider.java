@@ -1,5 +1,6 @@
 package pl.recompiled.devicecookiedemo.security.devicecookie.nonce;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
@@ -11,17 +12,7 @@ class SecureRandomAlphanumericNonceProvider implements NonceProvider {
 
     @Override
     public String generate(Integer nonceLength) {
-        return random.ints()
-                .filter(this::isAlphanumeric)
-                .limit(nonceLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
-
-    private boolean isAlphanumeric(int i) {
-        return ((i >= 48) && (i <= 57)) || // is between 0-9
-                ((i >= 65) && (i <= 90)) || // is between A-Z
-                ((i >= 97) && (i <= 122)); // is between a-z
+        return RandomStringUtils.random(nonceLength, 0, 0, true, true, null, this.random);
     }
 
 }

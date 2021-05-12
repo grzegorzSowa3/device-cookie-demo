@@ -33,8 +33,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .addFilterBefore(new PreAuthFilter(deviceCookieService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ExceptionHandlingFilter(), PreAuthFilter.class)
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/login*").permitAll()
                 .anyRequest().authenticated()
                 .and()

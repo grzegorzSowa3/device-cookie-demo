@@ -1,8 +1,17 @@
 
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
 device-cookie:
-  time-window: PT30M
-  max-failures: 5
-  penalty-duration: PT1H
+  time-window: PT1M
+  max-failures: 2
+  penalty-duration: PT5M
   nonce-length: 32
   jwt:
     issuer: http://test.pl

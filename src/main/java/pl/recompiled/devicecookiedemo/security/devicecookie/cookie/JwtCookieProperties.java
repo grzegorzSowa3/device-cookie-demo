@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "device-cookie.jwt")
-class JwtDeviceCookieProperties {
+class JwtCookieProperties {
 
     private String issuer;
     private String secret;

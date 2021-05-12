@@ -20,6 +20,9 @@ class DeviceCookieServiceImpl implements DeviceCookieService {
 
     @Override
     public boolean isDeviceCookieValidFor(String login, String deviceCookie) {
+        if (!cookieProvider.isCookieValid(deviceCookie)) {
+            return false;
+        }
         DeviceCookie cookie = cookieProvider.decodeCookie(deviceCookie);
         return cookie.getLogin().equals(login);
     }

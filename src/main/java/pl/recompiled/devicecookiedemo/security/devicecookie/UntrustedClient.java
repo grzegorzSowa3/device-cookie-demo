@@ -1,7 +1,7 @@
 package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import org.springframework.data.domain.Persistable;
 
@@ -13,12 +13,12 @@ import javax.persistence.Transient;
 import static lombok.AccessLevel.PRIVATE;
 
 @Entity
-@RequiredArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = PRIVATE)
 class UntrustedClient implements Persistable<String> {
 
     @Id
     @Getter
-    private final String login;
+    private String login;
 
     @Transient
     @Getter
@@ -26,12 +26,14 @@ class UntrustedClient implements Persistable<String> {
 
     @Embedded
     @Delegate
-    private final GenericClient client;
+    private GenericClient client;
 
-    static UntrustedClient newInstance(String nonce) {
-        var trustedClient = new UntrustedClient(nonce, GenericClient.newInstance());
-        trustedClient.isNew = true;
-        return trustedClient;
+    static UntrustedClient newInstance(String login) {
+        var untrustedClient = new UntrustedClient();
+        untrustedClient.login = login;
+        untrustedClient.client = GenericClient.newInstance();
+        untrustedClient.isNew = true;
+        return untrustedClient;
     }
 
     @Override

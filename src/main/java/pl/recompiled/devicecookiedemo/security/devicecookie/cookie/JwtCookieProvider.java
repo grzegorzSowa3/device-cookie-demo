@@ -6,29 +6,42 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.CookieInvalidException;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
+@Slf4j
 @Component
 class JwtCookieProvider implements CookieProvider {
 
-    private final JwtDeviceCookieProperties properties;
+    private final JwtCookieProperties properties;
     private final JWSSigner signer;
     private final JWSVerifier verifier;
 
     private final JWSHeader header;
 
-    JwtCookieProvider(JwtDeviceCookieProperties properties) throws JOSEException {
+    JwtCookieProvider(JwtCookieProperties properties) throws JOSEException {
         this.properties = properties;
         this.signer = new MACSigner(properties.getSecret());
         this.verifier = new MACVerifier(properties.getSecret());
         this.header = new JWSHeader(JWSAlgorithm.HS256);
+    }
+
+    @Override
+    public boolean isCookieValid(String deviceCookie) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(deviceCookie);
+            if (!jwt.verify(this.verifier)) {
+                log.warn("Device cookie signature is invalid");
+                return false;
+            }
+        } catch (JOSEException | ParseException e) {
+            log.warn(e.getClass().getSimpleName(), e);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -50,34 +63,11 @@ class JwtCookieProvider implements CookieProvider {
         final JWTClaimsSet claims;
         try {
             jwt = SignedJWT.parse(deviceCookie);
-            verifyCookieSignature(jwt);
             claims = jwt.getJWTClaimsSet();
         } catch (ParseException e) {
             throw new CookieInvalidException(e);
         }
         return new DeviceCookie(claims.getSubject(), claims.getJWTID());
-    }
-
-    private void verifyCookieSignature(SignedJWT jwt) {
-        try {
-            if (!jwt.verify(this.verifier)) {
-                throw new CookieInvalidException("Device cookie signature is invalid");
-            }
-        } catch (JOSEException e) {
-            throw new CookieInvalidException(e);
-        }
-    }
-
-    private LocalDateTime toLocalDateTime(Date date) {
-        return date.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
-    }
-
-    private Date toDate(LocalDateTime localDateTime) {
-        Instant instant = localDateTime.atZone(ZoneId.systemDefault())
-                .toInstant();
-        return Date.from(instant);
     }
 
 }
