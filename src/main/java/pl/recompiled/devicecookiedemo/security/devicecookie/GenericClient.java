@@ -2,6 +2,7 @@ package pl.recompiled.devicecookiedemo.security.devicecookie;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import pl.recompiled.devicecookiedemo.config.GlobalClock;
 
 import javax.persistence.Convert;
 import java.time.LocalDateTime;
@@ -24,11 +25,11 @@ class GenericClient {
     }
 
     public boolean isLocked() {
-        return lockedUntil != null && lockedUntil.isAfter(LocalDateTime.now());
+        return lockedUntil != null && lockedUntil.isAfter(LocalDateTime.now(GlobalClock.get()));
     }
 
     public void registerFailedLoginAttempt(DeviceCookieProperties properties) {
-        failedLoginAttempts.add(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());
+        failedLoginAttempts.add(LocalDateTime.now(GlobalClock.get()).atZone(ZoneId.systemDefault()).toEpochSecond());
         trimFailedLoginAttempts(properties);
         if (isMaxLoginAttemptsExceeded(properties)) {
             lock(properties);
@@ -36,7 +37,7 @@ class GenericClient {
     }
 
     private void trimFailedLoginAttempts(DeviceCookieProperties properties) {
-        Long oldestValidTimestamp = LocalDateTime.now().minus(properties.getTimeWindow())
+        Long oldestValidTimestamp = LocalDateTime.now(GlobalClock.get()).minus(properties.getTimeWindow())
                 .atZone(ZoneId.systemDefault()).toEpochSecond();
         this.failedLoginAttempts.removeIf(timestamp -> timestamp < oldestValidTimestamp);
     }
@@ -47,7 +48,7 @@ class GenericClient {
 
     private void lock(DeviceCookieProperties properties) {
         this.failedLoginAttempts = new ArrayList<>();
-        this.lockedUntil = LocalDateTime.now().plus(properties.getPenaltyDuration());
+        this.lockedUntil = LocalDateTime.now(GlobalClock.get()).plus(properties.getPenaltyDuration());
     }
 
 }

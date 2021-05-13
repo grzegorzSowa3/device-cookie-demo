@@ -1,6 +1,7 @@
 package pl.recompiled.devicecookiedemo.security;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import pl.recompiled.devicecookiedemo.security.devicecookie.DeviceCookieService;
 import pl.recompiled.devicecookiedemo.security.devicecookie.error.AuthenticationAttemptsLockedException;
@@ -26,13 +27,14 @@ class PreAuthFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
         final String username = httpRequest.getParameter("username");
-        if (username == null || username.isBlank() || !httpRequest.getRequestURI().contains("/login")) {
+        if (username == null || username.isBlank()
+                || !httpRequest.getRequestURI().contains("/login")) {
             // if it is not a login request, skip this filter
             filterChain.doFilter(request, response);
             return;
         }
 
-        final Optional<String> deviceCookie = Arrays.stream(httpRequest.getCookies())
+        final Optional<String> deviceCookie = Arrays.stream(ArrayUtils.nullToEmpty(httpRequest.getCookies(), Cookie[].class))
                 .filter(cookie -> cookie.getName().equals(DEVICE_COOKIE_NAME))
                 .map(Cookie::getValue)
                 .findFirst();

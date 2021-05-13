@@ -1,5 +1,6 @@
 package pl.recompiled.devicecookiedemo.security.devicecookie;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,22 +12,21 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
 import java.util.Objects;
 
+@Setter
 @Configuration
 @ConfigurationProperties(prefix = "device-cookie")
 class DeviceCookieProperties {
 
-    @Setter
     private String timeWindow;
-    @Setter
     private String penaltyDuration;
-    @Setter
     @Getter
     private Integer maxFailures;
-    @Setter
     @Getter
     private Integer nonceLength;
 
+    @Setter(AccessLevel.PRIVATE)
     private TemporalAmount timeWindowParsed;
+    @Setter(AccessLevel.PRIVATE)
     private TemporalAmount penaltyDurationParsed;
 
     TemporalAmount getTimeWindow() {

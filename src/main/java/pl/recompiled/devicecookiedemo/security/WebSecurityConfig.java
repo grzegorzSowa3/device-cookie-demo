@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -22,11 +23,18 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final DeviceCookieService deviceCookieService;
+    private final WebSecurityProperties properties;
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user").password(passwordEncoder().encode("pass")).roles("USER");
+        final InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> builder = auth.inMemoryAuthentication();
+        if (properties.getPredefinedUsers() != null && !properties.getPredefinedUsers().isEmpty()) {
+            for (WebSecurityProperties.User user: properties.getPredefinedUsers()) {
+                builder.withUser(user.getUsername())
+                        .password(passwordEncoder().encode(user.getPassword()))
+                        .roles(user.getRoles().toArray(new String[0]));
+            }
+        }
     }
 
     @Override
